@@ -11,6 +11,16 @@ import {
   date,
 } from "drizzle-orm/pg-core";
 
+// TRAIL
+
+export const trialUsers = pgTable("trialUsers", {
+  trialUserId: uuid("trialUserId").primaryKey().defaultRandom(),
+  email: varchar("email", { length: 100 }).notNull().unique(),
+  hashedPassword: text("hashedPassword").notNull(),
+  createdAt: timestamp("createdAt").defaultNow(),
+  expiresAt: timestamp("expiresAt"),
+});
+
 // USERS & PARENTS
 export const users = pgTable("users", {
   userId: uuid("userId").primaryKey().defaultRandom(),
