@@ -1,9 +1,9 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcrypt";
-import { db } from "@/lib/db";
-import { trialUsers } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
+import { db } from "../../../../lib/db/index";
+import { trialUsers } from "../../../../lib/drizzle/schema";
 
 export const authOptions: NextAuthOptions = {
   providers: [
