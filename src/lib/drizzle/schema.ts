@@ -6,13 +6,11 @@ import {
   boolean,
   timestamp,
   integer,
-  serial,
   jsonb,
   date,
 } from "drizzle-orm/pg-core";
 
 // TRAIL
-
 export const trialUsers = pgTable("trialUsers", {
   trialUserId: uuid("trialUserId").primaryKey().defaultRandom(),
   email: varchar("email", { length: 100 }).notNull().unique(),

@@ -3,7 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
+    "db:generate": "dotenv -e .env.local -- drizzle-kit generate",
+    "db:migrate": "dotenv -e .env.local -- tsx src/lib/drizzle/migration.ts",
+    "db:run": "dotenv -e .env.local -- drizzle-kit studio",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -14,12 +17,15 @@
     "dgram": "^1.0.1",
     "dns": "^0.2.2",
     "dotenv": "^16.5.0",
+    "dotenv-cli": "^8.0.0",
     "drizzle-orm": "^0.43.1",
     "next": "15.3.2",
     "next-auth": "^4.24.11",
     "pg": "^8.16.0",
+    "postgres": "^3.4.7",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "tsc": "^2.0.4"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
