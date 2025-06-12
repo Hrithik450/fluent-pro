@@ -1,6 +1,6 @@
 {
-  "id": "4f3b8e38-9d11-4522-aea6-3b9b5b927481",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "eedd09ae-2f22-4660-830c-87f14ca824c0",
+  "prevId": "4f3b8e38-9d11-4522-aea6-3b9b5b927481",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -1928,6 +1928,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "hashedPassword": {
+          "name": "hashedPassword",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "image": {
           "name": "image",
           "type": "text",
@@ -1957,7 +1963,8 @@
           "name": "userType",
           "type": "varchar",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": "'student'"
         }
       },
       "indexes": {},

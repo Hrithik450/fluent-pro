@@ -1,3 +1,17 @@
+CREATE TABLE "account" (
+	"userId" uuid NOT NULL,
+	"type" text NOT NULL,
+	"provider" varchar(255) NOT NULL,
+	"providerAccountId" varchar(255) NOT NULL,
+	"refresh_token" text,
+	"access_token" text,
+	"expires_at" timestamp,
+	"token_type" text,
+	"scope" text,
+	"id_token" text,
+	"session_state" text
+);
+--> statement-breakpoint
 CREATE TABLE "adminReports" (
 	"reportId" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"schoolId" uuid,
@@ -134,6 +148,12 @@ CREATE TABLE "schools" (
 	CONSTRAINT "schools_email_unique" UNIQUE("email")
 );
 --> statement-breakpoint
+CREATE TABLE "session" (
+	"sessionToken" varchar(255) PRIMARY KEY NOT NULL,
+	"userId" uuid NOT NULL,
+	"expires" timestamp NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE "speechAttempts" (
 	"speechAttemptId" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"bookSessionReportId" uuid,
@@ -227,52 +247,59 @@ CREATE TABLE "unlockedBooks" (
 	"unlockedBy" uuid
 );
 --> statement-breakpoint
-CREATE TABLE "users" (
-	"userId" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"username" varchar(50) NOT NULL,
+CREATE TABLE "user" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"name" varchar(50) NOT NULL,
 	"email" varchar(100) NOT NULL,
-	"passwordHash" text NOT NULL,
-	"firstName" varchar(50),
-	"lastName" varchar(50),
+	"emailVerified" timestamp,
+	"image" text,
 	"dateOfBirth" date,
 	"lastLogin" timestamp,
 	"isActive" boolean DEFAULT true,
 	"userType" varchar NOT NULL,
-	CONSTRAINT "users_email_unique" UNIQUE("email")
+	CONSTRAINT "user_email_unique" UNIQUE("email")
 );
 --> statement-breakpoint
+CREATE TABLE "verificationToken" (
+	"identifier" varchar(255) NOT NULL,
+	"token" varchar(255) PRIMARY KEY NOT NULL,
+	"expires" timestamp NOT NULL
+);
+--> statement-breakpoint
+ALTER TABLE "account" ADD CONSTRAINT "account_userId_user_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "adminReports" ADD CONSTRAINT "adminReports_schoolId_schools_schoolId_fk" FOREIGN KEY ("schoolId") REFERENCES "public"."schools"("schoolId") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "adminReports" ADD CONSTRAINT "adminReports_generatedBy_users_userId_fk" FOREIGN KEY ("generatedBy") REFERENCES "public"."users"("userId") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "adminReports" ADD CONSTRAINT "adminReports_generatedBy_user_id_fk" FOREIGN KEY ("generatedBy") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "bookPages" ADD CONSTRAINT "bookPages_bookId_books_bookId_fk" FOREIGN KEY ("bookId") REFERENCES "public"."books"("bookId") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "bookSessionReport" ADD CONSTRAINT "bookSessionReport_bookSessionId_bookSessions_bookSessionId_fk" FOREIGN KEY ("bookSessionId") REFERENCES "public"."bookSessions"("bookSessionId") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "bookSessions" ADD CONSTRAINT "bookSessions_studentId_users_userId_fk" FOREIGN KEY ("studentId") REFERENCES "public"."users"("userId") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "bookSessions" ADD CONSTRAINT "bookSessions_studentId_user_id_fk" FOREIGN KEY ("studentId") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "bookSessions" ADD CONSTRAINT "bookSessions_bookId_books_bookId_fk" FOREIGN KEY ("bookId") REFERENCES "public"."books"("bookId") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "chats" ADD CONSTRAINT "chats_userId_users_userId_fk" FOREIGN KEY ("userId") REFERENCES "public"."users"("userId") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "chats" ADD CONSTRAINT "chats_userId_user_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "messages" ADD CONSTRAINT "messages_chatId_chats_chatId_fk" FOREIGN KEY ("chatId") REFERENCES "public"."chats"("chatId") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "parentStudent" ADD CONSTRAINT "parentStudent_parentId_users_userId_fk" FOREIGN KEY ("parentId") REFERENCES "public"."users"("userId") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "parentStudent" ADD CONSTRAINT "parentStudent_studentId_users_userId_fk" FOREIGN KEY ("studentId") REFERENCES "public"."users"("userId") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "parents" ADD CONSTRAINT "parents_studentId_users_userId_fk" FOREIGN KEY ("studentId") REFERENCES "public"."users"("userId") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "parentStudent" ADD CONSTRAINT "parentStudent_parentId_user_id_fk" FOREIGN KEY ("parentId") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "parentStudent" ADD CONSTRAINT "parentStudent_studentId_user_id_fk" FOREIGN KEY ("studentId") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "parents" ADD CONSTRAINT "parents_studentId_user_id_fk" FOREIGN KEY ("studentId") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "questionOptions" ADD CONSTRAINT "questionOptions_questionId_quizQuestions_questionId_fk" FOREIGN KEY ("questionId") REFERENCES "public"."quizQuestions"("questionId") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "quizQuestions" ADD CONSTRAINT "quizQuestions_quizId_quizzes_quizId_fk" FOREIGN KEY ("quizId") REFERENCES "public"."quizzes"("quizId") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "schoolAdmins" ADD CONSTRAINT "schoolAdmins_userId_users_userId_fk" FOREIGN KEY ("userId") REFERENCES "public"."users"("userId") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "schoolAdmins" ADD CONSTRAINT "schoolAdmins_userId_user_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "schoolAdmins" ADD CONSTRAINT "schoolAdmins_schoolId_schools_schoolId_fk" FOREIGN KEY ("schoolId") REFERENCES "public"."schools"("schoolId") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "session" ADD CONSTRAINT "session_userId_user_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "speechAttempts" ADD CONSTRAINT "speechAttempts_bookSessionReportId_bookSessionReport_bookSessionReportId_fk" FOREIGN KEY ("bookSessionReportId") REFERENCES "public"."bookSessionReport"("bookSessionReportId") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "studentAssessments" ADD CONSTRAINT "studentAssessments_assignmentId_assessments_assessmentId_fk" FOREIGN KEY ("assignmentId") REFERENCES "public"."assessments"("assessmentId") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "studentAssessments" ADD CONSTRAINT "studentAssessments_studentId_users_userId_fk" FOREIGN KEY ("studentId") REFERENCES "public"."users"("userId") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "studentEnrollments" ADD CONSTRAINT "studentEnrollments_studentId_users_userId_fk" FOREIGN KEY ("studentId") REFERENCES "public"."users"("userId") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "studentAssessments" ADD CONSTRAINT "studentAssessments_studentId_user_id_fk" FOREIGN KEY ("studentId") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "studentEnrollments" ADD CONSTRAINT "studentEnrollments_studentId_user_id_fk" FOREIGN KEY ("studentId") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "studentEnrollments" ADD CONSTRAINT "studentEnrollments_schoolId_schools_schoolId_fk" FOREIGN KEY ("schoolId") REFERENCES "public"."schools"("schoolId") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "studentEnrollments" ADD CONSTRAINT "studentEnrollments_enrolledBy_users_userId_fk" FOREIGN KEY ("enrolledBy") REFERENCES "public"."users"("userId") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "studentProgressReports" ADD CONSTRAINT "studentProgressReports_studentId_users_userId_fk" FOREIGN KEY ("studentId") REFERENCES "public"."users"("userId") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "studentProgressReports" ADD CONSTRAINT "studentProgressReports_generatedBy_users_userId_fk" FOREIGN KEY ("generatedBy") REFERENCES "public"."users"("userId") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "studentEnrollments" ADD CONSTRAINT "studentEnrollments_enrolledBy_user_id_fk" FOREIGN KEY ("enrolledBy") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "studentProgressReports" ADD CONSTRAINT "studentProgressReports_studentId_user_id_fk" FOREIGN KEY ("studentId") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "studentProgressReports" ADD CONSTRAINT "studentProgressReports_generatedBy_user_id_fk" FOREIGN KEY ("generatedBy") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "studentQuizAnswers" ADD CONSTRAINT "studentQuizAnswers_attemptId_studentQuizAttempts_attemptId_fk" FOREIGN KEY ("attemptId") REFERENCES "public"."studentQuizAttempts"("attemptId") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "studentQuizAnswers" ADD CONSTRAINT "studentQuizAnswers_questionId_quizQuestions_questionId_fk" FOREIGN KEY ("questionId") REFERENCES "public"."quizQuestions"("questionId") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "studentQuizAnswers" ADD CONSTRAINT "studentQuizAnswers_selectedOptionId_questionOptions_optionId_fk" FOREIGN KEY ("selectedOptionId") REFERENCES "public"."questionOptions"("optionId") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "studentQuizAttempts" ADD CONSTRAINT "studentQuizAttempts_studentId_users_userId_fk" FOREIGN KEY ("studentId") REFERENCES "public"."users"("userId") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "studentQuizAttempts" ADD CONSTRAINT "studentQuizAttempts_studentId_user_id_fk" FOREIGN KEY ("studentId") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "studentQuizAttempts" ADD CONSTRAINT "studentQuizAttempts_quizId_quizzes_quizId_fk" FOREIGN KEY ("quizId") REFERENCES "public"."quizzes"("quizId") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "teacherAssignments" ADD CONSTRAINT "teacherAssignments_teacherId_users_userId_fk" FOREIGN KEY ("teacherId") REFERENCES "public"."users"("userId") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "teacherAssignments" ADD CONSTRAINT "teacherAssignments_teacherId_user_id_fk" FOREIGN KEY ("teacherId") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "teacherAssignments" ADD CONSTRAINT "teacherAssignments_schoolId_schools_schoolId_fk" FOREIGN KEY ("schoolId") REFERENCES "public"."schools"("schoolId") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "teacherAssignments" ADD CONSTRAINT "teacherAssignments_assignedBy_users_userId_fk" FOREIGN KEY ("assignedBy") REFERENCES "public"."users"("userId") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "teacherDashboards" ADD CONSTRAINT "teacherDashboards_teacherId_users_userId_fk" FOREIGN KEY ("teacherId") REFERENCES "public"."users"("userId") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "unlockedBooks" ADD CONSTRAINT "unlockedBooks_studentId_users_userId_fk" FOREIGN KEY ("studentId") REFERENCES "public"."users"("userId") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "teacherAssignments" ADD CONSTRAINT "teacherAssignments_assignedBy_user_id_fk" FOREIGN KEY ("assignedBy") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "teacherDashboards" ADD CONSTRAINT "teacherDashboards_teacherId_user_id_fk" FOREIGN KEY ("teacherId") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "unlockedBooks" ADD CONSTRAINT "unlockedBooks_studentId_user_id_fk" FOREIGN KEY ("studentId") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "unlockedBooks" ADD CONSTRAINT "unlockedBooks_bookId_books_bookId_fk" FOREIGN KEY ("bookId") REFERENCES "public"."books"("bookId") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "unlockedBooks" ADD CONSTRAINT "unlockedBooks_unlockedBy_users_userId_fk" FOREIGN KEY ("unlockedBy") REFERENCES "public"."users"("userId") ON DELETE no action ON UPDATE no action;
+ALTER TABLE "unlockedBooks" ADD CONSTRAINT "unlockedBooks_unlockedBy_user_id_fk" FOREIGN KEY ("unlockedBy") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;

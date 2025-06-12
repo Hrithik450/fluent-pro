@@ -1,138 +1,213 @@
 "use client";
-
-import { useState } from "react";
+import bcrypt from "bcryptjs";
+import { signUpSchema, TSignUpSchema } from "@/lib/zodSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Eye, EyeOff } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { login } from "@/actions/auth/sign-in";
+import { getSession } from "next-auth/react";
 
-export default function SignUp() {
+export default function SignUpPage() {
   const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const form = useForm<TSignUpSchema>({
+    resolver: zodResolver(signUpSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+    },
+  });
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
-
-    const formData = new FormData(e.currentTarget);
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
-    const confirmPassword = formData.get("confirmPassword") as string;
-
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      setLoading(false);
-      return;
+  useEffect(() => {
+    if (error) {
+      setTimeout(() => {
+        setError(null);
+      }, 2000);
     }
+  }, [error]);
 
+  const onSubmit = async (data: TSignUpSchema) => {
     try {
-      const res = await fetch("/api/auth/register", {
+      setLoading(true);
+      const response = await fetch("/api/auth/register", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
       });
 
-      const data = await res.json();
+      if (response.ok) {
+        const response = await login({
+          email: data.email,
+          password: data.password,
+        });
+        if (response.success) {
+          const session = await getSession();
 
-      if (!res.ok) {
-        throw new Error(data.error || "Something went wrong");
+          if (session && session.user.role === "superAdmin") {
+            router.push("/a/dashboard");
+          } else if (session && session.user.role === "teacher") {
+            router.push("/t/dashboard");
+          } else {
+            router.push("/");
+          }
+        } else {
+          setError("Invalid Credentials");
+          setLoading(false);
+        }
       }
-
-      // Redirect to sign in page after successful registration
-      router.push("/auth/signin?registered=true");
     } catch (error) {
-      setError(error instanceof Error ? error.message : "An error occurred");
-    } finally {
+      console.log(error);
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Create your account
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="min-h-screen flex items-center justify-center bg-white"
+      >
+        <div className="w-full max-w-sm p-6 space-y-6">
+          <h2 className="text-3xl font-semibold text-center text-black pb-3">
+            Create an account
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Start your 30-day free trial
-          </p>
-        </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm -space-y-px">
-            <div>
-              <label htmlFor="email" className="sr-only">
-                Email address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Email address"
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="new-password"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Password"
-              />
-            </div>
-            <div>
-              <label htmlFor="confirmPassword" className="sr-only">
-                Confirm Password
-              </label>
-              <input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                autoComplete="new-password"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Confirm Password"
-              />
-            </div>
-          </div>
 
           {error && (
-            <div className="text-red-500 text-sm text-center">{error}</div>
+            <div className="text-red-500 bg-red-100 py-2 rounded-md text-sm text-center">
+              {error}
+            </div>
           )}
 
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
-            >
-              {loading ? "Creating account..." : "Create account"}
-            </button>
-          </div>
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl className="relative">
+                  <div className="rounded-full">
+                    <Input
+                      className="peer rounded-full px-5 py-6 h-14 w-full text-sm placeholder-transparent focus:outline-none focus:ring-2"
+                      placeholder=" "
+                      {...field}
+                    />
+                    <label
+                      className="absolute left-6 text-gray-400 top-1/2 -translate-y-1/2 transition-all duration-200 ease-in-out 
+      peer-placeholder-shown:top-1/2 
+      peer-placeholder-shown:text-base 
+      peer-focus:top-0 peer-focus:bg-white peer-focus:px-1 peer-focus:text-sm 
+      peer-not-placeholder-shown:top-0 peer-not-placeholder-shown:bg-white peer-not-placeholder-shown:px-1 peer-not-placeholder-shown:text-sm"
+                    >
+                      Name
+                    </label>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-          <div className="text-sm text-center">
-            <Link
-              href="/auth/signin"
-              className="font-medium text-indigo-600 hover:text-indigo-500"
-            >
-              Already have an account? Sign in
-            </Link>
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl className="relative rounded-full">
+                  <div className="rounded-full">
+                    <Input
+                      className="peer rounded-full px-5 py-6 h-14 w-full text-sm placeholder-transparent focus:outline-none focus:ring-2"
+                      placeholder=" "
+                      {...field}
+                    />
+                    <label
+                      className="absolute left-6 text-gray-400 top-1/2 -translate-y-1/2 transition-all duration-200 ease-in-out 
+      peer-placeholder-shown:top-1/2 
+      peer-placeholder-shown:text-base 
+      peer-focus:top-0 peer-focus:bg-white peer-focus:px-1 peer-focus:text-sm 
+      peer-not-placeholder-shown:top-0 peer-not-placeholder-shown:bg-white peer-not-placeholder-shown:px-1 peer-not-placeholder-shown:text-sm"
+                    >
+                      Email Address
+                    </label>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <div className="relative">
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      {...field}
+                      placeholder=" "
+                      className="peer rounded-full px-5 py-6 h-14 w-full text-sm placeholder-transparent focus:outline-none focus:ring-2"
+                    />
+
+                    <span className="text-gray-700 absolute top-1/2 -translate-y-1/2 right-4 cursor-pointer z-10">
+                      {showPassword ? (
+                        <EyeOff
+                          onClick={() => setShowPassword(!showPassword)}
+                        />
+                      ) : (
+                        <Eye onClick={() => setShowPassword(!showPassword)} />
+                      )}
+                    </span>
+
+                    {/* Floating Label */}
+                    <label
+                      className="absolute left-6 text-gray-400 top-1/2 -translate-y-1/2 transition-all duration-200 ease-in-out 
+      peer-placeholder-shown:top-1/2 
+      peer-placeholder-shown:text-base 
+      peer-focus:top-0 peer-focus:bg-white peer-focus:px-1 peer-focus:text-sm
+      peer-not-placeholder-shown:top-0 peer-not-placeholder-shown:bg-white peer-not-placeholder-shown:px-1 peer-not-placeholder-shown:text-sm"
+                    >
+                      Password
+                    </label>
+                  </div>
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <Button
+            disabled={loading}
+            type="submit"
+            className={`w-full rounded-full px-5 py-6 text-md cursor-pointer ${
+              loading ? "disabled:opacity-75" : ""
+            }`}
+          >
+            {loading ? "Signing..." : "Sign Up"}
+          </Button>
+
+          <div className="text-center text-md font-semibold text-gray-600">
+            Already have an account?{" "}
+            <a href="/signin" className="text-blue-600 hover:underline">
+              Sign In
+            </a>
           </div>
-        </form>
-      </div>
-    </div>
+        </div>
+      </form>
+    </Form>
   );
 }

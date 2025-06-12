@@ -1,40 +1,23 @@
+import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
-import { hash } from "bcrypt";
-import { db } from "@/lib/db";
-import { trialUsers } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { signUpSchema } from "@/lib/zodSchema";
+import { UsersService } from "@/actions/users/users.service";
 
 export async function POST(req: Request) {
   try {
-    const { email, password } = await req.json();
+    const data = await req.json();
+    const validatedFields = signUpSchema.parse(data);
 
-    // Check if user already exists
-    const existingUser = await db.query.trialUsers.findFirst({
-      where: eq(trialUsers.email, email),
+    const { password, ...rest } = validatedFields;
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const response = await UsersService.createUser({
+      ...rest,
+      hashedPassword,
     });
 
-    if (existingUser) {
-      return NextResponse.json(
-        { error: "User already exists" },
-        { status: 400 }
-      );
-    }
-
-    // Hash password
-    const hashedPassword = await hash(password, 10);
-
-    // Create user
-    const [user] = await db
-      .insert(trialUsers)
-      .values({
-        email,
-        hashedPassword,
-        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
-      })
-      .returning();
-
     return NextResponse.json(
-      { message: "User created successfully" },
+      { message: "User created successfully", data: response.data },
       { status: 201 }
     );
   } catch (error) {

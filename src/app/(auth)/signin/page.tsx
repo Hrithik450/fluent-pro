@@ -1,122 +1,172 @@
 "use client";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
+import { useEffect, useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { signInSchema, TSignInSchema } from "@/lib/zodSchema";
+import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import { login } from "@/actions/auth/sign-in";
+import { Input } from "@/components/ui/input";
+import { Eye, EyeOff } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { getSession } from "next-auth/react";
 
-import { useState, useEffect } from "react";
-import { signIn } from "next-auth/react";
-import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
-
-export default function SignIn() {
+export default function SignInPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const form = useForm<TSignInSchema>({
+    resolver: zodResolver(signInSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
   useEffect(() => {
-    if (searchParams.get("registered") === "true") {
-      setSuccess("Account created successfully! Please sign in.");
+    if (error) {
+      setTimeout(() => {
+        setError(null);
+      }, 2000);
     }
-  }, [searchParams]);
+  }, [error]);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError(null);
-    setSuccess(null);
-    setLoading(true);
-
-    const formData = new FormData(e.currentTarget);
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
-
+  const onSubmit = async (data: TSignInSchema) => {
     try {
-      const result = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-      });
+      setLoading(true);
+      const response = await login(data);
 
-      if (result?.error) {
-        setError("Invalid email or password");
-        return;
+      if (response.success) {
+        const session = await getSession();
+
+        if (session && session.user.role === "superAdmin") {
+          router.push("/a/dashboard");
+        } else if (session && session.user.role === "teacher") {
+          router.push("/t/dashboard");
+        } else {
+          router.push("/");
+        }
+      } else {
+        setError("Invalid Credentials");
+        setLoading(false);
       }
-
-      router.push("/dashboard");
-      router.refresh();
     } catch (error) {
-      setError("An error occurred. Please try again.");
-    } finally {
+      console.log(error);
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Sign in to your account
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="min-h-screen flex items-center justify-center bg-white"
+      >
+        <div className="w-full max-w-sm p-6 space-y-6">
+          <h2 className="text-3xl font-semibold text-center text-black pb-3">
+            Welcome Back
           </h2>
-        </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm -space-y-px">
-            <div>
-              <label htmlFor="email" className="sr-only">
-                Email address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Email address"
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Password"
-              />
-            </div>
-          </div>
 
           {error && (
-            <div className="text-red-500 text-sm text-center">{error}</div>
+            <div className="text-red-500 bg-red-100 py-2 rounded-md text-sm text-center">
+              {error}
+            </div>
           )}
 
-          {success && (
-            <div className="text-green-500 text-sm text-center">{success}</div>
-          )}
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl className="relative rounded-full">
+                  <div className="rounded-full">
+                    <Input
+                      className="peer rounded-full px-5 py-6 h-14 w-full text-sm placeholder-transparent focus:outline-none focus:ring-2"
+                      placeholder=" "
+                      {...field}
+                    />
+                    <label
+                      className="absolute left-6 text-gray-400 top-1/2 -translate-y-1/2 transition-all duration-200 ease-in-out 
+      peer-placeholder-shown:top-1/2 
+      peer-placeholder-shown:text-base 
+      peer-focus:top-0 peer-focus:bg-white peer-focus:px-1 peer-focus:text-sm 
+      peer-not-placeholder-shown:top-0 peer-not-placeholder-shown:bg-white peer-not-placeholder-shown:px-1 peer-not-placeholder-shown:text-sm"
+                    >
+                      Email Address
+                    </label>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
-            >
-              {loading ? "Signing in..." : "Sign in"}
-            </button>
-          </div>
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <div className="relative">
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      {...field}
+                      placeholder=" "
+                      className="peer rounded-full px-5 py-6 h-14 w-full text-sm placeholder-transparent focus:outline-none focus:ring-2"
+                    />
 
-          <div className="text-sm text-center">
-            <Link
-              href="/signup"
-              className="font-medium text-indigo-600 hover:text-indigo-500"
-            >
-              Don't have an account? Sign up
-            </Link>
+                    <span className="text-gray-700 absolute top-1/2 -translate-y-1/2 right-4 cursor-pointer z-10">
+                      {showPassword ? (
+                        <EyeOff
+                          onClick={() => setShowPassword(!showPassword)}
+                        />
+                      ) : (
+                        <Eye onClick={() => setShowPassword(!showPassword)} />
+                      )}
+                    </span>
+
+                    <label
+                      className="absolute left-6 text-gray-400 top-1/2 -translate-y-1/2 transition-all duration-200 ease-in-out 
+      peer-placeholder-shown:top-1/2 
+      peer-placeholder-shown:text-base 
+      peer-focus:top-0 peer-focus:bg-white peer-focus:px-1 peer-focus:text-sm
+      peer-not-placeholder-shown:top-0 peer-not-placeholder-shown:bg-white peer-not-placeholder-shown:px-1 peer-not-placeholder-shown:text-sm"
+                    >
+                      Password
+                    </label>
+                  </div>
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <Button
+            disabled={loading}
+            type="submit"
+            className={`w-full rounded-full px-5 py-6 text-md cursor-pointer ${
+              loading ? "disabled:opacity-75" : ""
+            }`}
+          >
+            {loading ? "Authenticatiing..." : "Login"}
+          </Button>
+
+          <div className="text-center text-md font-semibold text-gray-600">
+            Don't have an account?{" "}
+            <a href="/signup" className="text-blue-600 hover:underline">
+              Sign Up
+            </a>
           </div>
-        </form>
-      </div>
-    </div>
+        </div>
+      </form>
+    </Form>
   );
 }

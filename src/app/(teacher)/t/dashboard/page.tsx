@@ -1,4 +1,4 @@
-import { AppSidebar } from "@/components/admin/app-admin-sidebar";
+import { AppSidebar } from "@/components/teacher/app-teacher-sidebar";
 import { ChartAreaInteractive } from "@/components/chart-area-interactive";
 import { DataTable } from "@/components/data-table";
 import { SectionCards } from "@/components/section-cards";
@@ -10,12 +10,8 @@ import data from "./data.json";
 
 export default async function Dashboard() {
   const session = await auth();
-  if (!session) {
+  if (!session || (session && session.user?.role !== "superAdmin")) {
     return redirect("/signin");
-  }
-
-  if (session && session.user?.role !== "superAdmin") {
-    return redirect("/");
   }
 
   return (

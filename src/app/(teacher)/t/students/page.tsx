@@ -1,23 +1,10 @@
-import { AppSidebar } from "@/components/admin/app-admin-sidebar";
-import { ChartAreaInteractive } from "@/components/chart-area-interactive";
-import { DataTable } from "@/components/data-table";
-import { SectionCards } from "@/components/section-cards";
+import { AppSidebar } from "@/components/teacher/app-teacher-sidebar";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
-import data from "./data.json";
+import { DataTable } from "@/components/data-table";
+import data from "../dashboard/data.json";
 
-export default async function Dashboard() {
-  const session = await auth();
-  if (!session) {
-    return redirect("/signin");
-  }
-
-  if (session && session.user?.role !== "superAdmin") {
-    return redirect("/");
-  }
-
+export default function Dashboard() {
   return (
     <SidebarProvider
       style={
@@ -33,10 +20,6 @@ export default async function Dashboard() {
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-              <SectionCards />
-              <div className="px-4 lg:px-6">
-                <ChartAreaInteractive />
-              </div>
               <DataTable data={data} />
             </div>
           </div>

@@ -20,32 +20,64 @@ export const trialUsers = pgTable("trialUsers", {
 });
 
 // USERS & PARENTS
-export const users = pgTable("users", {
-  userId: uuid("userId").primaryKey().defaultRandom(),
-  username: varchar("username", { length: 50 }).notNull(),
+export const users = pgTable("user", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: varchar("name", { length: 50 }).notNull(),
   email: varchar("email", { length: 100 }).notNull().unique(),
-  passwordHash: text("passwordHash").notNull(),
-  firstName: varchar("firstName", { length: 50 }),
-  lastName: varchar("lastName", { length: 50 }),
+  emailVerified: timestamp("emailVerified", { mode: "date" }),
+  hashedPassword: text("hashedPassword").notNull(),
+  image: text("image"),
   dateOfBirth: date("dateOfBirth"),
   lastLogin: timestamp("lastLogin"),
   isActive: boolean("isActive").default(true),
   userType: varchar("userType", {
     enum: ["superAdmin", "schoolAdmin", "teacher", "student"],
-  }).notNull(),
+  })
+    .notNull()
+    .default("student"),
+});
+
+export const accounts = pgTable("account", {
+  userId: uuid("userId")
+    .notNull()
+    .references(() => users.id),
+  type: text("type").$type<"oauth" | "credentials">().notNull(),
+  provider: varchar("provider", { length: 255 }).notNull(),
+  providerAccountId: varchar("providerAccountId", { length: 255 }).notNull(),
+  refresh_token: text("refresh_token"),
+  access_token: text("access_token"),
+  expires_at: timestamp("expires_at", { mode: "date" }),
+  token_type: text("token_type"),
+  scope: text("scope"),
+  id_token: text("id_token"),
+  session_state: text("session_state"),
+});
+
+export const sessions = pgTable("session", {
+  sessionToken: varchar("sessionToken", { length: 255 }).primaryKey(),
+  userId: uuid("userId")
+    .notNull()
+    .references(() => users.id),
+  expires: timestamp("expires", { mode: "date" }).notNull(),
+});
+
+export const verificationTokens = pgTable("verificationToken", {
+  identifier: varchar("identifier", { length: 255 }).notNull(),
+  token: varchar("token", { length: 255 }).primaryKey(),
+  expires: timestamp("expires", { mode: "date" }).notNull(),
 });
 
 export const parents = pgTable("parents", {
   parentId: uuid("parentId").primaryKey().defaultRandom(),
-  studentId: uuid("studentId").references(() => users.userId),
+  studentId: uuid("studentId").references(() => users.id),
   phoneNumber: varchar("phoneNumber", { length: 15 }),
   whatsappNumber: varchar("whatsappNumber", { length: 15 }),
 });
 
 export const parentStudent = pgTable("parentStudent", {
   relationshipId: uuid("relationshipId").primaryKey().defaultRandom(),
-  parentId: uuid("parentId").references(() => users.userId),
-  studentId: uuid("studentId").references(() => users.userId),
+  parentId: uuid("parentId").references(() => users.id),
+  studentId: uuid("studentId").references(() => users.id),
   isActive: boolean("isActive").default(true),
 });
 
@@ -66,7 +98,7 @@ export const schools = pgTable("schools", {
 
 export const schoolAdmins = pgTable("schoolAdmins", {
   adminId: uuid("adminId").primaryKey().defaultRandom(),
-  userId: uuid("userId").references(() => users.userId),
+  userId: uuid("userId").references(() => users.id),
   schoolId: uuid("schoolId").references(() => schools.schoolId),
   assignedAt: timestamp("assignedAt"),
   isActive: boolean("isActive").default(true),
@@ -74,18 +106,18 @@ export const schoolAdmins = pgTable("schoolAdmins", {
 
 export const teacherAssignments = pgTable("teacherAssignments", {
   assignmentId: uuid("assignmentId").primaryKey().defaultRandom(),
-  teacherId: uuid("teacherId").references(() => users.userId),
+  teacherId: uuid("teacherId").references(() => users.id),
   schoolId: uuid("schoolId").references(() => schools.schoolId),
   assignedAt: timestamp("assignedAt"),
-  assignedBy: uuid("assignedBy").references(() => users.userId),
+  assignedBy: uuid("assignedBy").references(() => users.id),
   isActive: boolean("isActive").default(true),
 });
 
 export const studentEnrollments = pgTable("studentEnrollments", {
   enrollmentId: uuid("enrollmentId").primaryKey().defaultRandom(),
-  studentId: uuid("studentId").references(() => users.userId),
+  studentId: uuid("studentId").references(() => users.id),
   schoolId: uuid("schoolId").references(() => schools.schoolId),
-  enrolledBy: uuid("enrolledBy").references(() => users.userId),
+  enrolledBy: uuid("enrolledBy").references(() => users.id),
   enrolledAt: timestamp("enrolledAt"),
   currentGrade: varchar("currentGrade", { length: 20 }),
   isActive: boolean("isActive").default(true),
@@ -122,16 +154,16 @@ export const bookPages = pgTable("bookPages", {
 
 export const unlockedBooks = pgTable("unlockedBooks", {
   unlockId: uuid("unlockId").primaryKey().defaultRandom(),
-  studentId: uuid("studentId").references(() => users.userId),
+  studentId: uuid("studentId").references(() => users.id),
   bookId: uuid("bookId").references(() => books.bookId),
   unlockedAt: timestamp("unlockedAt"),
-  unlockedBy: uuid("unlockedBy").references(() => users.userId),
+  unlockedBy: uuid("unlockedBy").references(() => users.id),
 });
 
 // BOOK SESSION
 export const bookSessions = pgTable("bookSessions", {
   bookSessionId: uuid("bookSessionId").primaryKey().defaultRandom(),
-  studentId: uuid("studentId").references(() => users.userId),
+  studentId: uuid("studentId").references(() => users.id),
   bookId: uuid("bookId").references(() => books.bookId),
   sessionType: varchar("sessionType", { length: 20 }),
   maxPoints: integer("maxPoints"),
@@ -192,7 +224,7 @@ export const questionOptions = pgTable("questionOptions", {
 
 export const studentQuizAttempts = pgTable("studentQuizAttempts", {
   attemptId: uuid("attemptId").primaryKey().defaultRandom(),
-  studentId: uuid("studentId").references(() => users.userId),
+  studentId: uuid("studentId").references(() => users.id),
   quizId: uuid("quizId").references(() => quizzes.quizId),
   score: integer("score"),
   pointsEarned: integer("pointsEarned"),
@@ -214,9 +246,9 @@ export const studentQuizAnswers = pgTable("studentQuizAnswers", {
 // STUDENT PROGRESS
 export const studentProgressReports = pgTable("studentProgressReports", {
   reportId: uuid("reportId").primaryKey().defaultRandom(),
-  studentId: uuid("studentId").references(() => users.userId),
+  studentId: uuid("studentId").references(() => users.id),
   generatedAt: timestamp("generatedAt"),
-  generatedBy: uuid("generatedBy").references(() => users.userId),
+  generatedBy: uuid("generatedBy").references(() => users.id),
   currentLevel: integer("currentLevel"),
   booksReadCount: integer("booksReadCount"),
   averageAccuracy: integer("averageAccuracy"),
@@ -225,7 +257,7 @@ export const studentProgressReports = pgTable("studentProgressReports", {
 
 export const teacherDashboards = pgTable("teacherDashboards", {
   dashboardId: uuid("dashboardId").primaryKey().defaultRandom(),
-  teacherId: uuid("teacherId").references(() => users.userId),
+  teacherId: uuid("teacherId").references(() => users.id),
   students: text("students"),
   views: jsonb("views"),
 });
@@ -234,7 +266,7 @@ export const adminReports = pgTable("adminReports", {
   reportId: uuid("reportId").primaryKey().defaultRandom(),
   schoolId: uuid("schoolId").references(() => schools.schoolId),
   generatedAt: timestamp("generatedAt"),
-  generatedBy: uuid("generatedBy").references(() => users.userId),
+  generatedBy: uuid("generatedBy").references(() => users.id),
   reportData: jsonb("reportData"),
 });
 
@@ -248,14 +280,14 @@ export const assessments = pgTable("assessments", {
 export const studentAssessments = pgTable("studentAssessments", {
   studentAssessmentId: uuid("studentAssessmentId").primaryKey().defaultRandom(),
   assignmentId: uuid("assignmentId").references(() => assessments.assessmentId),
-  studentId: uuid("studentId").references(() => users.userId),
+  studentId: uuid("studentId").references(() => users.id),
   isCompleted: boolean("isCompleted"),
 });
 
 // CHATBOT
 export const chats = pgTable("chats", {
   chatId: uuid("chatId").primaryKey().defaultRandom(),
-  userId: uuid("userId").references(() => users.userId),
+  userId: uuid("userId").references(() => users.id),
   title: varchar("title", { length: 100 }),
 });
 

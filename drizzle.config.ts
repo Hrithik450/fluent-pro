@@ -1,7 +1,7 @@
 import "dotenv/config";
-import { defineConfig } from "drizzle-kit";
+import type { Config } from "drizzle-kit";
 
-export default defineConfig({
+export default {
   out: "./src/lib/drizzle/migrations",
   schema: "./src/lib/drizzle/schema.ts",
   dialect: "postgresql",
@@ -10,4 +10,4 @@ export default defineConfig({
   },
   verbose: true,
   strict: true,
-});
+} satisfies Config;
