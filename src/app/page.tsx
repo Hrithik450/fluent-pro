@@ -1,7 +1,7 @@
-export default function Home() {
-  return (
-    <div>
-      <h1>Next JS Opening Route</h1>
-    </div>
-  );
+import { Home } from "@/components/student/home";
+import { auth } from "@/lib/auth";
+
+export default async function UI() {
+  const session = await auth();
+  return <Home email={session?.user.email} />;
 }
