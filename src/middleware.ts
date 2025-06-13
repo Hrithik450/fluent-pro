@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function middleware(request: NextRequest) {
+  console.log("Cookies in request:", request.cookies.getAll());
   const token = await getToken({
     req: request,
     secret: process.env.NEXTAUTH_SECRET,
