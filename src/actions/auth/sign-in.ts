@@ -14,15 +14,16 @@ export const login = async (values: TSignInSchema) => {
     const response = await signIn("credentials", {
       email,
       password,
-      redirectTo: "/signin",
+      redirect: false,
+      callbackUrl: "/signin",
     });
 
-    // if (!response || response.error) {
-    //   return {
-    //     success: false,
-    //     error: response?.error || "Unknown error",
-    //   };
-    // }
+    if (!response || response.error) {
+      return {
+        success: false,
+        error: response?.error || "Unknown error",
+      };
+    }
 
     return {
       success: true,

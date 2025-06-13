@@ -2,7 +2,7 @@ import { signOut } from "next-auth/react";
 
 export const logout = async () => {
   try {
-    await signOut({ redirectTo: "/signin" });
+    await signOut({ redirect: true, callbackUrl: "/signin" });
   } catch (error) {
     return {
       success: false,
