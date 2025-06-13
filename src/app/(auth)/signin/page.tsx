@@ -15,6 +15,7 @@ import { login } from "@/actions/auth/sign-in";
 import { Input } from "@/components/ui/input";
 import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { getSession } from "next-auth/react";
 
 export default function SignInPage() {
   const router = useRouter();
@@ -39,17 +40,40 @@ export default function SignInPage() {
 
   const onSubmit = async (data: TSignInSchema) => {
     try {
+      console.log("Login attempt with data:", data);
       setLoading(true);
+
       const response = await login(data);
+      console.log("Login response:", response);
 
       if (response.success) {
-        router.push("/auth-redirect");
+        const session = await getSession();
+        console.log("Session fetched after login:", session);
+
+        if (session) {
+          console.log("Session user role:", session.user.role);
+          if (session.user.role === "superAdmin") {
+            console.log("Redirecting to /a/dashboard");
+            router.push("/a/dashboard");
+          } else if (session.user.role === "teacher") {
+            console.log("Redirecting to /t/dashboard");
+            router.push("/t/dashboard");
+          } else {
+            console.log("Redirecting to /");
+            router.push("/");
+          }
+        } else {
+          console.warn("Session is null after login. Something went wrong.");
+          setError("Session could not be established");
+          setLoading(false);
+        }
       } else {
+        console.warn("Login failed:", response.error);
         setError("Invalid Credentials");
         setLoading(false);
       }
     } catch (error) {
-      console.log(error);
+      console.error("Login error:", error);
       setLoading(false);
     }
   };
