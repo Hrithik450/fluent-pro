@@ -5,8 +5,19 @@ import { SectionCards } from "@/components/section-cards";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import data from "./data.json";
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 export default async function Dashboard() {
+  const session = await auth();
+  if (!session?.user) {
+    return redirect("/signin");
+  }
+
+  if (session && session.user.role !== "superAdmin") {
+    return redirect("/");
+  }
+
   return (
     <SidebarProvider
       style={

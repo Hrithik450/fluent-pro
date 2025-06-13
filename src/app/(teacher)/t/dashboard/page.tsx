@@ -6,8 +6,18 @@ import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { redirect } from "next/navigation";
 import data from "./data.json";
+import { auth } from "@/lib/auth";
 
 export default async function Dashboard() {
+  const session = await auth();
+  if (!session?.user) {
+    return redirect("/signin");
+  }
+
+  if (session && session.user.role === "student") {
+    return redirect("/");
+  }
+
   return (
     <SidebarProvider
       style={
