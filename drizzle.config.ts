@@ -6,7 +6,7 @@ export default {
   schema: "./src/lib/drizzle/schema.ts",
   dialect: "postgresql",
   dbCredentials: {
-    url: process.env.DATABASE_URL!,
+    url: process.env.NEXTDATABASE_URL!,
   },
   verbose: true,
   strict: true,
