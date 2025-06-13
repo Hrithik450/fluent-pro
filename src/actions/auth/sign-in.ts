@@ -15,7 +15,7 @@ export const login = async (values: TSignInSchema) => {
       email,
       password,
       redirect: true,
-      callbackUrl: "/auth-redirect",
+      callbackUrl: "/signin",
     });
   } catch (error) {
     return {
