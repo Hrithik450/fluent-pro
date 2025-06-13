@@ -1,0 +1,2029 @@
+{
+  "id": "ae05da32-5e23-4207-9456-c9be6389b45f",
+  "prevId": "eedd09ae-2f22-4660-830c-87f14ca824c0",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.account": {
+      "name": "account",
+      "schema": "",
+      "columns": {
+        "userId": {
+          "name": "userId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "provider": {
+          "name": "provider",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "providerAccountId": {
+          "name": "providerAccountId",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "refresh_token": {
+          "name": "refresh_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "access_token": {
+          "name": "access_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "token_type": {
+          "name": "token_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "scope": {
+          "name": "scope",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "id_token": {
+          "name": "id_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "session_state": {
+          "name": "session_state",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "account_userId_user_id_fk": {
+          "name": "account_userId_user_id_fk",
+          "tableFrom": "account",
+          "tableTo": "user",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.adminReports": {
+      "name": "adminReports",
+      "schema": "",
+      "columns": {
+        "reportId": {
+          "name": "reportId",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "schoolId": {
+          "name": "schoolId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "generatedAt": {
+          "name": "generatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "generatedBy": {
+          "name": "generatedBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reportData": {
+          "name": "reportData",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "adminReports_schoolId_schools_schoolId_fk": {
+          "name": "adminReports_schoolId_schools_schoolId_fk",
+          "tableFrom": "adminReports",
+          "tableTo": "schools",
+          "columnsFrom": [
+            "schoolId"
+          ],
+          "columnsTo": [
+            "schoolId"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "adminReports_generatedBy_user_id_fk": {
+          "name": "adminReports_generatedBy_user_id_fk",
+          "tableFrom": "adminReports",
+          "tableTo": "user",
+          "columnsFrom": [
+            "generatedBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.assessments": {
+      "name": "assessments",
+      "schema": "",
+      "columns": {
+        "assessmentId": {
+          "name": "assessmentId",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "assignmentName": {
+          "name": "assignmentName",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "coverUrl": {
+          "name": "coverUrl",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "isActive": {
+          "name": "isActive",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.bookPages": {
+      "name": "bookPages",
+      "schema": "",
+      "columns": {
+        "pageId": {
+          "name": "pageId",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "bookId": {
+          "name": "bookId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pageNumber": {
+          "name": "pageNumber",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "imagesUrl": {
+          "name": "imagesUrl",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "bookPages_bookId_books_bookId_fk": {
+          "name": "bookPages_bookId_books_bookId_fk",
+          "tableFrom": "bookPages",
+          "tableTo": "books",
+          "columnsFrom": [
+            "bookId"
+          ],
+          "columnsTo": [
+            "bookId"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.bookSessionReport": {
+      "name": "bookSessionReport",
+      "schema": "",
+      "columns": {
+        "bookSessionReportId": {
+          "name": "bookSessionReportId",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "bookSessionId": {
+          "name": "bookSessionId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pointsEarned": {
+          "name": "pointsEarned",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "wordsCorrect": {
+          "name": "wordsCorrect",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "wordsIncorrect": {
+          "name": "wordsIncorrect",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "wordsPerMinute": {
+          "name": "wordsPerMinute",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "bookSessionReport_bookSessionId_bookSessions_bookSessionId_fk": {
+          "name": "bookSessionReport_bookSessionId_bookSessions_bookSessionId_fk",
+          "tableFrom": "bookSessionReport",
+          "tableTo": "bookSessions",
+          "columnsFrom": [
+            "bookSessionId"
+          ],
+          "columnsTo": [
+            "bookSessionId"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.bookSessions": {
+      "name": "bookSessions",
+      "schema": "",
+      "columns": {
+        "bookSessionId": {
+          "name": "bookSessionId",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "studentId": {
+          "name": "studentId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bookId": {
+          "name": "bookId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sessionType": {
+          "name": "sessionType",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "maxPoints": {
+          "name": "maxPoints",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "isCompleted": {
+          "name": "isCompleted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "bookSessions_studentId_user_id_fk": {
+          "name": "bookSessions_studentId_user_id_fk",
+          "tableFrom": "bookSessions",
+          "tableTo": "user",
+          "columnsFrom": [
+            "studentId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "bookSessions_bookId_books_bookId_fk": {
+          "name": "bookSessions_bookId_books_bookId_fk",
+          "tableFrom": "bookSessions",
+          "tableTo": "books",
+          "columnsFrom": [
+            "bookId"
+          ],
+          "columnsTo": [
+            "bookId"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.books": {
+      "name": "books",
+      "schema": "",
+      "columns": {
+        "bookId": {
+          "name": "bookId",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "title": {
+          "name": "title",
+          "type": "varchar(150)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "author": {
+          "name": "author",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "coverImageUrl": {
+          "name": "coverImageUrl",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "totalPages": {
+          "name": "totalPages",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "minLevelReq": {
+          "name": "minLevelReq",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "maxPoints": {
+          "name": "maxPoints",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "isActive": {
+          "name": "isActive",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.chats": {
+      "name": "chats",
+      "schema": "",
+      "columns": {
+        "chatId": {
+          "name": "chatId",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "userId": {
+          "name": "userId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "title": {
+          "name": "title",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "chats_userId_user_id_fk": {
+          "name": "chats_userId_user_id_fk",
+          "tableFrom": "chats",
+          "tableTo": "user",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.levels": {
+      "name": "levels",
+      "schema": "",
+      "columns": {
+        "levelId": {
+          "name": "levelId",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "levelNumber": {
+          "name": "levelNumber",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "levelName": {
+          "name": "levelName",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "minPointsReq": {
+          "name": "minPointsReq",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.messages": {
+      "name": "messages",
+      "schema": "",
+      "columns": {
+        "messageId": {
+          "name": "messageId",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "chatId": {
+          "name": "chatId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "role": {
+          "name": "role",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "messages_chatId_chats_chatId_fk": {
+          "name": "messages_chatId_chats_chatId_fk",
+          "tableFrom": "messages",
+          "tableTo": "chats",
+          "columnsFrom": [
+            "chatId"
+          ],
+          "columnsTo": [
+            "chatId"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.parentStudent": {
+      "name": "parentStudent",
+      "schema": "",
+      "columns": {
+        "relationshipId": {
+          "name": "relationshipId",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "parentId": {
+          "name": "parentId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "studentId": {
+          "name": "studentId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "isActive": {
+          "name": "isActive",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "parentStudent_parentId_user_id_fk": {
+          "name": "parentStudent_parentId_user_id_fk",
+          "tableFrom": "parentStudent",
+          "tableTo": "user",
+          "columnsFrom": [
+            "parentId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "parentStudent_studentId_user_id_fk": {
+          "name": "parentStudent_studentId_user_id_fk",
+          "tableFrom": "parentStudent",
+          "tableTo": "user",
+          "columnsFrom": [
+            "studentId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.parents": {
+      "name": "parents",
+      "schema": "",
+      "columns": {
+        "parentId": {
+          "name": "parentId",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "studentId": {
+          "name": "studentId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "phoneNumber": {
+          "name": "phoneNumber",
+          "type": "varchar(15)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "whatsappNumber": {
+          "name": "whatsappNumber",
+          "type": "varchar(15)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "parents_studentId_user_id_fk": {
+          "name": "parents_studentId_user_id_fk",
+          "tableFrom": "parents",
+          "tableTo": "user",
+          "columnsFrom": [
+            "studentId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.questionOptions": {
+      "name": "questionOptions",
+      "schema": "",
+      "columns": {
+        "optionId": {
+          "name": "optionId",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "questionId": {
+          "name": "questionId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "optionText": {
+          "name": "optionText",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "isCorrect": {
+          "name": "isCorrect",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "questionOptions_questionId_quizQuestions_questionId_fk": {
+          "name": "questionOptions_questionId_quizQuestions_questionId_fk",
+          "tableFrom": "questionOptions",
+          "tableTo": "quizQuestions",
+          "columnsFrom": [
+            "questionId"
+          ],
+          "columnsTo": [
+            "questionId"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.quizQuestions": {
+      "name": "quizQuestions",
+      "schema": "",
+      "columns": {
+        "questionId": {
+          "name": "questionId",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "quizId": {
+          "name": "quizId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "questionText": {
+          "name": "questionText",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "questionType": {
+          "name": "questionType",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "points": {
+          "name": "points",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "quizQuestions_quizId_quizzes_quizId_fk": {
+          "name": "quizQuestions_quizId_quizzes_quizId_fk",
+          "tableFrom": "quizQuestions",
+          "tableTo": "quizzes",
+          "columnsFrom": [
+            "quizId"
+          ],
+          "columnsTo": [
+            "quizId"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.quizzes": {
+      "name": "quizzes",
+      "schema": "",
+      "columns": {
+        "quizId": {
+          "name": "quizId",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "quizName": {
+          "name": "quizName",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "totalQuestions": {
+          "name": "totalQuestions",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "timeLimitMinutes": {
+          "name": "timeLimitMinutes",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "passingScore": {
+          "name": "passingScore",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "isActive": {
+          "name": "isActive",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.schoolAdmins": {
+      "name": "schoolAdmins",
+      "schema": "",
+      "columns": {
+        "adminId": {
+          "name": "adminId",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "userId": {
+          "name": "userId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "schoolId": {
+          "name": "schoolId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "assignedAt": {
+          "name": "assignedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "isActive": {
+          "name": "isActive",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "schoolAdmins_userId_user_id_fk": {
+          "name": "schoolAdmins_userId_user_id_fk",
+          "tableFrom": "schoolAdmins",
+          "tableTo": "user",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "schoolAdmins_schoolId_schools_schoolId_fk": {
+          "name": "schoolAdmins_schoolId_schools_schoolId_fk",
+          "tableFrom": "schoolAdmins",
+          "tableTo": "schools",
+          "columnsFrom": [
+            "schoolId"
+          ],
+          "columnsTo": [
+            "schoolId"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.schools": {
+      "name": "schools",
+      "schema": "",
+      "columns": {
+        "schoolId": {
+          "name": "schoolId",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "schoolName": {
+          "name": "schoolName",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "address": {
+          "name": "address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "city": {
+          "name": "city",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "state": {
+          "name": "state",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "country": {
+          "name": "country",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postalCode": {
+          "name": "postalCode",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "phoneNumber": {
+          "name": "phoneNumber",
+          "type": "varchar(15)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "website": {
+          "name": "website",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "isActive": {
+          "name": "isActive",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "schools_email_unique": {
+          "name": "schools_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.session": {
+      "name": "session",
+      "schema": "",
+      "columns": {
+        "sessionToken": {
+          "name": "sessionToken",
+          "type": "varchar(255)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "userId": {
+          "name": "userId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires": {
+          "name": "expires",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "session_userId_user_id_fk": {
+          "name": "session_userId_user_id_fk",
+          "tableFrom": "session",
+          "tableTo": "user",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.speechAttempts": {
+      "name": "speechAttempts",
+      "schema": "",
+      "columns": {
+        "speechAttemptId": {
+          "name": "speechAttemptId",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "bookSessionReportId": {
+          "name": "bookSessionReportId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "audioRecordingUrl": {
+          "name": "audioRecordingUrl",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "transcriptText": {
+          "name": "transcriptText",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "confidenceScore": {
+          "name": "confidenceScore",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "wordsCorrect": {
+          "name": "wordsCorrect",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "wordsIncorrect": {
+          "name": "wordsIncorrect",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "totalWords": {
+          "name": "totalWords",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "accuracy": {
+          "name": "accuracy",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "processedAt": {
+          "name": "processedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "speechAttempts_bookSessionReportId_bookSessionReport_bookSessionReportId_fk": {
+          "name": "speechAttempts_bookSessionReportId_bookSessionReport_bookSessionReportId_fk",
+          "tableFrom": "speechAttempts",
+          "tableTo": "bookSessionReport",
+          "columnsFrom": [
+            "bookSessionReportId"
+          ],
+          "columnsTo": [
+            "bookSessionReportId"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.studentAssessments": {
+      "name": "studentAssessments",
+      "schema": "",
+      "columns": {
+        "studentAssessmentId": {
+          "name": "studentAssessmentId",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "assignmentId": {
+          "name": "assignmentId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "studentId": {
+          "name": "studentId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "isCompleted": {
+          "name": "isCompleted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "studentAssessments_assignmentId_assessments_assessmentId_fk": {
+          "name": "studentAssessments_assignmentId_assessments_assessmentId_fk",
+          "tableFrom": "studentAssessments",
+          "tableTo": "assessments",
+          "columnsFrom": [
+            "assignmentId"
+          ],
+          "columnsTo": [
+            "assessmentId"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "studentAssessments_studentId_user_id_fk": {
+          "name": "studentAssessments_studentId_user_id_fk",
+          "tableFrom": "studentAssessments",
+          "tableTo": "user",
+          "columnsFrom": [
+            "studentId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.studentEnrollments": {
+      "name": "studentEnrollments",
+      "schema": "",
+      "columns": {
+        "enrollmentId": {
+          "name": "enrollmentId",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "studentId": {
+          "name": "studentId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "schoolId": {
+          "name": "schoolId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "enrolledBy": {
+          "name": "enrolledBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "enrolledAt": {
+          "name": "enrolledAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "currentGrade": {
+          "name": "currentGrade",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "isActive": {
+          "name": "isActive",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "studentEnrollments_studentId_user_id_fk": {
+          "name": "studentEnrollments_studentId_user_id_fk",
+          "tableFrom": "studentEnrollments",
+          "tableTo": "user",
+          "columnsFrom": [
+            "studentId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "studentEnrollments_schoolId_schools_schoolId_fk": {
+          "name": "studentEnrollments_schoolId_schools_schoolId_fk",
+          "tableFrom": "studentEnrollments",
+          "tableTo": "schools",
+          "columnsFrom": [
+            "schoolId"
+          ],
+          "columnsTo": [
+            "schoolId"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "studentEnrollments_enrolledBy_user_id_fk": {
+          "name": "studentEnrollments_enrolledBy_user_id_fk",
+          "tableFrom": "studentEnrollments",
+          "tableTo": "user",
+          "columnsFrom": [
+            "enrolledBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.studentProgressReports": {
+      "name": "studentProgressReports",
+      "schema": "",
+      "columns": {
+        "reportId": {
+          "name": "reportId",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "studentId": {
+          "name": "studentId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "generatedAt": {
+          "name": "generatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "generatedBy": {
+          "name": "generatedBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "currentLevel": {
+          "name": "currentLevel",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "booksReadCount": {
+          "name": "booksReadCount",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "averageAccuracy": {
+          "name": "averageAccuracy",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "improvementSuggestions": {
+          "name": "improvementSuggestions",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "studentProgressReports_studentId_user_id_fk": {
+          "name": "studentProgressReports_studentId_user_id_fk",
+          "tableFrom": "studentProgressReports",
+          "tableTo": "user",
+          "columnsFrom": [
+            "studentId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "studentProgressReports_generatedBy_user_id_fk": {
+          "name": "studentProgressReports_generatedBy_user_id_fk",
+          "tableFrom": "studentProgressReports",
+          "tableTo": "user",
+          "columnsFrom": [
+            "generatedBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.studentQuizAnswers": {
+      "name": "studentQuizAnswers",
+      "schema": "",
+      "columns": {
+        "answerId": {
+          "name": "answerId",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "attemptId": {
+          "name": "attemptId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "questionId": {
+          "name": "questionId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "selectedOptionId": {
+          "name": "selectedOptionId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "answerText": {
+          "name": "answerText",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "isCorrect": {
+          "name": "isCorrect",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pointsEarned": {
+          "name": "pointsEarned",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "studentQuizAnswers_attemptId_studentQuizAttempts_attemptId_fk": {
+          "name": "studentQuizAnswers_attemptId_studentQuizAttempts_attemptId_fk",
+          "tableFrom": "studentQuizAnswers",
+          "tableTo": "studentQuizAttempts",
+          "columnsFrom": [
+            "attemptId"
+          ],
+          "columnsTo": [
+            "attemptId"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "studentQuizAnswers_questionId_quizQuestions_questionId_fk": {
+          "name": "studentQuizAnswers_questionId_quizQuestions_questionId_fk",
+          "tableFrom": "studentQuizAnswers",
+          "tableTo": "quizQuestions",
+          "columnsFrom": [
+            "questionId"
+          ],
+          "columnsTo": [
+            "questionId"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "studentQuizAnswers_selectedOptionId_questionOptions_optionId_fk": {
+          "name": "studentQuizAnswers_selectedOptionId_questionOptions_optionId_fk",
+          "tableFrom": "studentQuizAnswers",
+          "tableTo": "questionOptions",
+          "columnsFrom": [
+            "selectedOptionId"
+          ],
+          "columnsTo": [
+            "optionId"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.studentQuizAttempts": {
+      "name": "studentQuizAttempts",
+      "schema": "",
+      "columns": {
+        "attemptId": {
+          "name": "attemptId",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "studentId": {
+          "name": "studentId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "quizId": {
+          "name": "quizId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "score": {
+          "name": "score",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pointsEarned": {
+          "name": "pointsEarned",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "isPromoted": {
+          "name": "isPromoted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "studentQuizAttempts_studentId_user_id_fk": {
+          "name": "studentQuizAttempts_studentId_user_id_fk",
+          "tableFrom": "studentQuizAttempts",
+          "tableTo": "user",
+          "columnsFrom": [
+            "studentId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "studentQuizAttempts_quizId_quizzes_quizId_fk": {
+          "name": "studentQuizAttempts_quizId_quizzes_quizId_fk",
+          "tableFrom": "studentQuizAttempts",
+          "tableTo": "quizzes",
+          "columnsFrom": [
+            "quizId"
+          ],
+          "columnsTo": [
+            "quizId"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.teacherAssignments": {
+      "name": "teacherAssignments",
+      "schema": "",
+      "columns": {
+        "assignmentId": {
+          "name": "assignmentId",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "teacherId": {
+          "name": "teacherId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "schoolId": {
+          "name": "schoolId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "assignedAt": {
+          "name": "assignedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "assignedBy": {
+          "name": "assignedBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "isActive": {
+          "name": "isActive",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "teacherAssignments_teacherId_user_id_fk": {
+          "name": "teacherAssignments_teacherId_user_id_fk",
+          "tableFrom": "teacherAssignments",
+          "tableTo": "user",
+          "columnsFrom": [
+            "teacherId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "teacherAssignments_schoolId_schools_schoolId_fk": {
+          "name": "teacherAssignments_schoolId_schools_schoolId_fk",
+          "tableFrom": "teacherAssignments",
+          "tableTo": "schools",
+          "columnsFrom": [
+            "schoolId"
+          ],
+          "columnsTo": [
+            "schoolId"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "teacherAssignments_assignedBy_user_id_fk": {
+          "name": "teacherAssignments_assignedBy_user_id_fk",
+          "tableFrom": "teacherAssignments",
+          "tableTo": "user",
+          "columnsFrom": [
+            "assignedBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.teacherDashboards": {
+      "name": "teacherDashboards",
+      "schema": "",
+      "columns": {
+        "dashboardId": {
+          "name": "dashboardId",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "teacherId": {
+          "name": "teacherId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "students": {
+          "name": "students",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "views": {
+          "name": "views",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "teacherDashboards_teacherId_user_id_fk": {
+          "name": "teacherDashboards_teacherId_user_id_fk",
+          "tableFrom": "teacherDashboards",
+          "tableTo": "user",
+          "columnsFrom": [
+            "teacherId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.trialUsers": {
+      "name": "trialUsers",
+      "schema": "",
+      "columns": {
+        "trialUserId": {
+          "name": "trialUserId",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "hashedPassword": {
+          "name": "hashedPassword",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "expiresAt": {
+          "name": "expiresAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "trialUsers_email_unique": {
+          "name": "trialUsers_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.unlockedBooks": {
+      "name": "unlockedBooks",
+      "schema": "",
+      "columns": {
+        "unlockId": {
+          "name": "unlockId",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "studentId": {
+          "name": "studentId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bookId": {
+          "name": "bookId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "unlockedAt": {
+          "name": "unlockedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "unlockedBy": {
+          "name": "unlockedBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "unlockedBooks_studentId_user_id_fk": {
+          "name": "unlockedBooks_studentId_user_id_fk",
+          "tableFrom": "unlockedBooks",
+          "tableTo": "user",
+          "columnsFrom": [
+            "studentId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "unlockedBooks_bookId_books_bookId_fk": {
+          "name": "unlockedBooks_bookId_books_bookId_fk",
+          "tableFrom": "unlockedBooks",
+          "tableTo": "books",
+          "columnsFrom": [
+            "bookId"
+          ],
+          "columnsTo": [
+            "bookId"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "unlockedBooks_unlockedBy_user_id_fk": {
+          "name": "unlockedBooks_unlockedBy_user_id_fk",
+          "tableFrom": "unlockedBooks",
+          "tableTo": "user",
+          "columnsFrom": [
+            "unlockedBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.user": {
+      "name": "user",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "emailVerified": {
+          "name": "emailVerified",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hashedPassword": {
+          "name": "hashedPassword",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "image": {
+          "name": "image",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "dateOfBirth": {
+          "name": "dateOfBirth",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "lastLogin": {
+          "name": "lastLogin",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "isActive": {
+          "name": "isActive",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "userType": {
+          "name": "userType",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'student'"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "user_email_unique": {
+          "name": "user_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.verificationToken": {
+      "name": "verificationToken",
+      "schema": "",
+      "columns": {
+        "identifier": {
+          "name": "identifier",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "token": {
+          "name": "token",
+          "type": "varchar(255)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "expires": {
+          "name": "expires",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

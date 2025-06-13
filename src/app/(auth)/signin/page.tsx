@@ -41,9 +41,24 @@ export default function SignInPage() {
   const onSubmit = async (data: TSignInSchema) => {
     try {
       setLoading(true);
-      await login(data);
+      const response = await login(data);
+
+      if (response.success) {
+        const session = await getSession();
+
+        if (session && session.user.role === "superAdmin") {
+          router.push("/a/dashboard");
+        } else if (session && session.user.role === "teacher") {
+          router.push("/t/dashboard");
+        } else {
+          router.push("/");
+        }
+      } else {
+        setError("Invalid Credentials");
+        setLoading(false);
+      }
     } catch (error) {
-      console.error("Authentication error", error);
+      console.log(error);
       setLoading(false);
     }
   };
@@ -73,6 +88,7 @@ export default function SignInPage() {
                 <FormControl className="relative rounded-full">
                   <div className="rounded-full">
                     <Input
+                      disabled={loading}
                       className="peer rounded-full px-5 py-6 h-14 w-full text-sm placeholder-transparent focus:outline-none focus:ring-2"
                       placeholder=" "
                       {...field}
@@ -101,6 +117,7 @@ export default function SignInPage() {
                 <FormControl>
                   <div className="relative">
                     <Input
+                      disabled={loading}
                       type={showPassword ? "text" : "password"}
                       {...field}
                       placeholder=" "

@@ -50,13 +50,27 @@ export default function SignUpPage() {
       });
 
       if (response.ok) {
-        await login({
+        const response = await login({
           email: data.email,
           password: data.password,
         });
+        if (response.success) {
+          const session = await getSession();
+
+          if (session && session.user.role === "superAdmin") {
+            router.push("/a/dashboard");
+          } else if (session && session.user.role === "teacher") {
+            router.push("/t/dashboard");
+          } else {
+            router.push("/");
+          }
+        } else {
+          setError("Invalid Credentials");
+          setLoading(false);
+        }
       }
     } catch (error) {
-      console.error("Authentication error", error);
+      console.log(error);
       setLoading(false);
     }
   };
@@ -86,6 +100,7 @@ export default function SignUpPage() {
                 <FormControl className="relative">
                   <div className="rounded-full">
                     <Input
+                      disabled={loading}
                       className="peer rounded-full px-5 py-6 h-14 w-full text-sm placeholder-transparent focus:outline-none focus:ring-2"
                       placeholder=" "
                       {...field}
@@ -114,6 +129,7 @@ export default function SignUpPage() {
                 <FormControl className="relative rounded-full">
                   <div className="rounded-full">
                     <Input
+                      disabled={loading}
                       className="peer rounded-full px-5 py-6 h-14 w-full text-sm placeholder-transparent focus:outline-none focus:ring-2"
                       placeholder=" "
                       {...field}
@@ -142,6 +158,7 @@ export default function SignUpPage() {
                 <FormControl>
                   <div className="relative">
                     <Input
+                      disabled={loading}
                       type={showPassword ? "text" : "password"}
                       {...field}
                       placeholder=" "
