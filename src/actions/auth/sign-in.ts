@@ -11,22 +11,12 @@ export const login = async (values: TSignInSchema) => {
   const { email, password } = validatedFields.data;
 
   try {
-    const response = await signIn("credentials", {
+    await signIn("credentials", {
       email,
       password,
-      redirect: false,
+      redirect: true,
+      callbackUrl: "/auth-redirect",
     });
-
-    if (!response || response.error) {
-      return {
-        success: false,
-        error: response?.error || "Unknown error",
-      };
-    }
-
-    return {
-      success: true,
-    };
   } catch (error) {
     return {
       success: false,

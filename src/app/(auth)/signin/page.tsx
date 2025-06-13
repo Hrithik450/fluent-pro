@@ -41,24 +41,9 @@ export default function SignInPage() {
   const onSubmit = async (data: TSignInSchema) => {
     try {
       setLoading(true);
-      const response = await login(data);
-
-      if (response.success) {
-        const session = await getSession();
-
-        if (session && session.user.role === "superAdmin") {
-          router.push("/a/dashboard");
-        } else if (session && session.user.role === "teacher") {
-          router.push("/t/dashboard");
-        } else {
-          router.push("/");
-        }
-      } else {
-        setError("Invalid Credentials");
-        setLoading(false);
-      }
+      await login(data);
     } catch (error) {
-      console.log(error);
+      console.error("Authentication error", error);
       setLoading(false);
     }
   };
