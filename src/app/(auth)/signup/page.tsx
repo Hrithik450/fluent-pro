@@ -16,7 +16,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { login } from "@/actions/auth/sign-in";
-import { getSession } from "next-auth/react";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -55,15 +54,7 @@ export default function SignUpPage() {
           password: data.password,
         });
         if (response.success) {
-          const session = await getSession();
-
-          if (session && session.user.role === "superAdmin") {
-            router.push("/a/dashboard");
-          } else if (session && session.user.role === "teacher") {
-            router.push("/t/dashboard");
-          } else {
-            router.push("/");
-          }
+          router.push("/auth-redirect");
         } else {
           setError("Invalid Credentials");
           setLoading(false);

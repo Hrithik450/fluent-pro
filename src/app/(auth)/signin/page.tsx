@@ -15,7 +15,6 @@ import { login } from "@/actions/auth/sign-in";
 import { Input } from "@/components/ui/input";
 import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { getSession } from "next-auth/react";
 
 export default function SignInPage() {
   const router = useRouter();
@@ -44,15 +43,7 @@ export default function SignInPage() {
       const response = await login(data);
 
       if (response.success) {
-        const session = await getSession();
-
-        if (session && session.user.role === "superAdmin") {
-          router.push("/a/dashboard");
-        } else if (session && session.user.role === "teacher") {
-          router.push("/t/dashboard");
-        } else {
-          router.push("/");
-        }
+        router.push("/auth-redirect");
       } else {
         setError("Invalid Credentials");
         setLoading(false);
