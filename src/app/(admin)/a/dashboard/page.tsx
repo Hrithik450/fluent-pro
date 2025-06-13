@@ -4,20 +4,9 @@ import { DataTable } from "@/components/data-table";
 import { SectionCards } from "@/components/section-cards";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
 import data from "./data.json";
 
 export default async function Dashboard() {
-  const session = await auth();
-  if (!session) {
-    return redirect("/signin");
-  }
-
-  if (session && session.user?.role !== "superAdmin") {
-    return redirect("/");
-  }
-
   return (
     <SidebarProvider
       style={
