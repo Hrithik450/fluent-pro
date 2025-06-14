@@ -1,5 +1,11 @@
 import { UsersModel } from "./users.model";
-import { User, UserResponse, userSchema, UsersResponse } from "./users.types";
+import {
+  GetStudentsSearchParamsSchema,
+  User,
+  UserResponse,
+  userSchema,
+  UsersResponse,
+} from "./users.types";
 
 export class UsersService {
   static async createUser(data: Partial<User>): Promise<UserResponse> {
@@ -62,16 +68,14 @@ export class UsersService {
     }
   }
 
-  static async getUsers(): Promise<UsersResponse> {
+  static async getUsers(
+    input: GetStudentsSearchParamsSchema
+  ): Promise<UsersResponse> {
     try {
-      const users = await UsersModel.getUsers();
-      return { success: true, data: users, pageCount: 1 };
+      const users = await UsersModel.getUsers(input);
+      return { success: true, data: users.data, pageCount: users.pageCount };
     } catch (error) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : "Failed to get users",
-        pageCount: null,
-      };
+      return { success: false, data: [], pageCount: 0 };
     }
   }
 }

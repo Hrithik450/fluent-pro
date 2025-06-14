@@ -1,4 +1,10 @@
 import { users } from "@/lib/drizzle/schema";
+import { commonParsers } from "@/lib/table/validation";
+import {
+  createSearchParamsCache,
+  parseAsString,
+  parseAsTimestamp,
+} from "nuqs/server";
 import { z } from "zod";
 
 export type User = typeof users.$inferSelect;
@@ -34,7 +40,23 @@ export type UserResponse = {
 
 export type UsersResponse = {
   success: boolean;
-  data?: User[] | null;
+  data?: Omit<User, "hashedPassword">[];
   error?: string;
-  pageCount: number | null;
+  pageCount: number;
 };
+
+export const studentSearchParamCache = createSearchParamsCache({
+  ...commonParsers,
+  id: parseAsString.withDefault(""),
+  userId: parseAsString.withDefault(""),
+  name: parseAsString.withDefault(""),
+  email: parseAsString.withDefault(""),
+  from: parseAsString.withDefault(""),
+  to: parseAsString.withDefault(""),
+  userType: parseAsString.withDefault(""),
+  dateOfBirth: parseAsString.withDefault(""),
+});
+
+export type GetStudentsSearchParamsSchema = Awaited<
+  ReturnType<typeof studentSearchParamCache.parse>
+>;

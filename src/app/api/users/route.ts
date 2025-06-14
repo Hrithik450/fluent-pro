@@ -14,11 +14,11 @@ export async function GET(request: Request) {
       return NextResponse.json(response.data);
     }
 
-    const response = await UsersService.getUsers();
-    if (!response.success) {
-      return NextResponse.json({ error: response.error }, { status: 500 });
-    }
-    return NextResponse.json(response.data);
+    // const response = await UsersService.getUsers();
+    // if (!response.success) {
+    //   return NextResponse.json({ error: response.error }, { status: 500 });
+    // }
+    // return NextResponse.json(response.data);
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to fetch users" },
